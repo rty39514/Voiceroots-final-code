@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Cultures of India — Voice Roots</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Open+Sans&display=swap" rel="stylesheet"/>
+  <style>
+    :root{
+      --purple:#6c63ff;
+      --purple-dark:#5548c8;
+      --bg:#f6f7fb;
+      --card:#ffffff;
+      --muted:#666;
+      --radius:12px;
+      --maxWidth:1100px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:"Open Sans",system-ui,Arial;
+      background:var(--bg);
+      padding:28px;
+      color:#222;
+    }
+    .wrap{
+      max-width:var(--maxWidth);
+      margin:18px auto;
+      background:var(--card);
+      padding:28px;
+      border-radius:18px;
+      box-shadow:0 14px 40px rgba(20,20,40,0.07);
+    }
+    h1{
+      font-family:'Montserrat',sans-serif;
+      margin:0 0 12px 0;
+      font-size:28px;
+      color:#222;
+      text-align:center;
+    }
+    .search-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:18px 0 12px;}
+    .search-input{
+      flex:1;
+      padding:12px 14px;
+      border-radius:10px;
+      border:1px solid #ddd;
+      font-size:16px;
+      outline:none;
+      box-shadow:none;
+    }
+    .section-title{
+      color:var(--purple-dark);
+      margin:18px 0 10px 0;
+      font-size:18px;
+      font-weight:700;
+    }
+
+    /* Most searched grid */
+    #mostSearched{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+      gap:14px;
+      margin-bottom:18px;
+    }
+
+    .culture-card{
+      background:#fff;
+      border-radius:12px;
+      padding:14px;
+      box-shadow:0 6px 18px rgba(20,20,60,0.04);
+      cursor:pointer;
+      transition:transform .16s ease, box-shadow .16s ease;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      min-height:170px;
+    }
+    .culture-card:hover{
+      transform:translateY(-6px);
+      box-shadow:0 18px 36px rgba(20,20,60,0.08);
+    }
+    .thumb{
+      width:100%;
+      height:130px;
+      overflow:hidden;
+      border-radius:10px;
+      background:#eee;
+      flex-shrink:0;
+    }
+    .thumb img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+    .card-title{font-weight:700;color:var(--purple-dark);margin:0;font-size:16px}
+    .card-sub{color:var(--muted);font-size:14px;margin:0;flex:1}
+    .tiny-note{font-size:11px;color:#999;margin-top:6px;font-style:italic}
+
+    .back-row{display:flex;justify-content:flex-end;margin-top:18px}
+    .back-btn{background:#999;color:#fff;padding:10px 16px;border-radius:10px;text-decoration:none;font-weight:700}
+
+    /* Modal */
+    .modal{display:none;position:fixed;z-index:1200;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,0.6);align-items:center;justify-content:center;padding:20px}
+    .modal.open{display:flex}
+    .modal-content{
+      width:100%;
+      max-width:900px;
+      background:#fff;
+      border-radius:12px;
+      overflow:hidden;
+      box-shadow:0 20px 60px rgba(10,10,40,0.3);
+      animation:pop .12s ease-out;
+    }
+    @keyframes pop{from{transform:scale(.98);opacity:0}to{transform:scale(1);opacity:1}}
+    .modal-body{display:flex;flex-direction:column;gap:18px;padding:18px}
+    .modal-image{width:100%;height:300px;overflow:hidden;border-radius:8px}
+    .modal-image img{width:100%;height:100%;object-fit:cover;display:block}
+    .modal-title{font-family:'Montserrat',sans-serif;margin:0;color:var(--purple-dark);font-size:22px}
+    .modal-desc{color:#333;line-height:1.7;text-align:justify;margin:0;font-size:15px}
+    .modal-footer{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+    .close-btn{background:#eee;border:none;padding:8px 12px;border-radius:8px;cursor:pointer;font-weight:700}
+    .more-info{font-size:12px;color:#777;font-style:italic}
+
+    /* Responsive */
+    @media (min-width:900px){
+      .modal-body{flex-direction:column}
+    }
+    @media (max-width:520px){
+      .thumb{height:120px}
+      .modal-image{height:220px}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap" role="main" aria-label="Cultures of India">
+    <h1>🌏 Cultures of India</h1>
+
+    <div class="search-row">
+      <input id="searchInput" class="search-input" placeholder="Search for a state, UT, or tribal culture (e.g. 'Kerala', 'Warli')">
+      <button id="shuffleBtn" class="close-btn" title="Show another set of most searched">Shuffle</button>
+    </div>
+
+    <div class="section-title">Most Searched Cultures</div>
+    <div id="mostSearched" aria-live="polite"></div>
+
+    <!-- Hidden master list (data-img + data-details). Each entry includes a short subtitle for the card. -->
+    <div id="allCultures" style="display:none;">
+      <!-- States (28) -->
+      <div class="culture-data" data-key="Andhra Pradesh" data-img="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSna2BJJvS8Nd0JTcrNBwO9YpqaWEXrd0nTSA&s" data-sub="Kuchipudi, spicy coastal cuisine" data-details="Andhra Pradesh presents a vibrant cultural tapestry where classical Kuchipudi dance meets bold coastal cuisine and centuries of history. Kuchipudi performances are known for technical brilliance, expressive abhinaya, and storytelling drawn from Hindu epics. The region celebrates festivals such as Ugadi and Sankranti with floral decorations, traditional music and seasonal feasts; the culinary palette features fiery curries, tamarind-based gravies, and rice as staple. Andhra’s historical sites — from Buddhist Amaravati to Vijayanagara-influenced architecture — show a land where temple arts, devotional music and folk forms like Burrakatha coexist with modern cultural currents in cities like Vijayawada and Visakhapatnam." ></div>
+
+      <div class="culture-data" data-key="Arunachal Pradesh" data-img="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4yVMwccp3LH2RIFKcPacrq40elBvQ8tjs0A&s" data-sub="Tribal festivals, monasteries" data-details="Arunachal Pradesh is a mosaic of tribal identities and high Himalayan traditions where Buddhist monasteries and indigenous rituals thrive. Home to dozens of ethnic groups — including the Apatani, Nyishi and Mishmi — the state celebrates unique harvest and warrior festivals, often accompanied by lively dances, bamboo instruments and vibrant handlooms. The Losar and Donyi-Polo ceremonies reveal a spiritual life tied to nature, while monasteries such as Tawang & small village gompas highlight Tibetan-Buddhist influences. Traditional crafts, intricate weaving and distinctive wooden architecture reflect a culture deeply rooted in mountain ecology and community ties." ></div>
+
+      <div class="culture-data" data-key="Assam" data-img="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcStf6nuD4AvlZPuj8KeVAEnVlgyyp2bmEXSUg&s" data-sub="Bihu, tea gardens, Muga silk" data-details="Assam is defined by its riverine plains, tea gardens and a buoyant festival culture led by Bihu — a trio of seasonal celebrations that mark sowing, harvesting and community renewal. Bihu performances combine brisk group dances with rhythmic percussion and singing, making it the pulsating heart of Assamese social life. Assam’s artisanal heritage includes prized Muga and Eri silk weaving as well as bamboo crafts. The region also harbors ancient Vaishnavite traditions — Sattriya dance and devotion — and biodiversity hotspots like Kaziranga that have shaped religious, culinary and artistic practices for centuries." ></div>
+
+      <div class="culture-data" data-key="Bihar" data-img="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSH_rBVW_SjSVrXpwOGjaZxc0gDLZ6Ci_VaIA&s" data-sub="Madhubani art, Chhath Puja" data-details="Bihar carries a deep civilizational legacy — from Buddhist Bodh Gaya to medieval universities like Nalanda — layered with vibrant village arts and rituals. Madhubani painting, with its dense motifs, bold lines and natural pigments, is a world-renowned folk art traditionally crafted by women for festivals and ceremonies. Chhath Puja, dedicated to the sun, draws millions to riverbanks for ritual offerings and communal devotion. Folk theatre, Bhojpuri songs, and local culinary specialities like litti-chokha enrich everyday life, while ancient sites and pilgrimage traditions shape a cultural landscape that links devotion, scholarship and popular creativity." ></div>
+
+      <div class="culture-data" data-key="Chhattisgarh" data-img="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR4apcBpKzsaSlYNqGGh6QvixwvLlc-O1Y6vQ&s" data-sub="Tribal dances, bell-metal crafts" data-details="Chhattisgarh’s culture is heavily influenced by its tribal communities and forested landscapes. Traditional dances such as Panthi and Raut Nacha feature rhythmic steps and community participation during seasonal festivals. Crafts like bell-metal (dhokra) and wrought-iron work, along with weaving and bamboo artistry, are widely practiced. Rituals to honor nature, agricultural cycles and local deities remain central, and colourful local fairs provide a stage for folk music, dance and masked performances that link contemporary village life with ancient ritual forms." ></div>
+
+      <div class="culture-data" data-key="Goa" data-img="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTvUhwghwEhLJNdA6NR19DZL1op9xY-CK7d1w&s" data-sub="Portuguese legacy, Carnival" data-details="Goa blends Konkani traditions with a long Portuguese heritage, producing a unique cultural cocktail of colonial architecture, Catholic festivals and coastal cuisine. The Goa Carnival — a legacy of colonial times — features parades, masquerades and music. Goan music (including mando and dulpods), fish-based cooking, and bright festas showcase how religious syncretism and seafaring trade shaped local life. Village church feasts, temple rites, and a relaxed beach culture coexist, making Goa both a deeply rooted regional culture and an internationally known holiday destination." ></div>
+
+      <div class="culture-data" data-key="Gujarat" data-img="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS-lrcfnWe3B4UAo2lFkxuKCSuqylNw9m0Xdw&s" data-sub="Garba, Dandiya Raas, textiles" data-details="Gujarat is famed for its exuberant Navratri celebrations where Garba and Dandiya Raas bring thousands into rhythmic, circular dances wearing mirror-laced costumes. The state’s textile traditions — from bandhani tie-dye to intricate Kutchi embroidery — remain vibrant, along with a rich craft ecology including metalwork and pottery. Gujarati cuisine balances sweet and savory notes, and communities celebrate harvest and religious festivals with enthusiastic public processions and folk music, reflecting strong mercantile and agrarian roots." ></div>
+
+      <div class="culture-data" data-key="Haryana" data-img="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5XA3srgKE-BY51s-KsygP1Eyj8A0bKByxbA&s" data-sub="Rural music, wrestling, Phag" data-details="Haryana’s cultural profile is shaped by vigorous rural customs — loud folk songs, robust dance forms and an important tradition of wrestling (kushti). Festivals like Teej and Phag bring community gatherings with singing and dance, and local cuisines reflect wheat and dairy abundance. Haryanvi folk narratives, ballads and the close-knit panchayat culture create a social fabric where traditional sports, folk art and agricultural rhythms remain prominent." ></div>
+
+      <div class="culture-data" data-key="Himachal Pradesh" data-img="https://www.ritiriwaz.com/wp-content/uploads/2018/11/Himachal-Pradesh-Culture.jpg" data-sub="Kullu Dussehra, pahadi music" data-details="Himachal Pradesh is known for its mountainous cultures — devotional festivals, hill music and a hospitality rooted in village customs. Kullu Dussehra is celebrated with processions, folk dances and religious pageantry that attract visitors from across the Himalaya. Local handicrafts include shawls and woodcarving; seasonal fairs, apple harvests and pilgrimage circuits shape cultural rhythms. Pahadi songs and dances tell stories of landscape, valor and devotion in intimately communal settings." ></div>
+
+      <div class="culture-data" data-key="Jharkhand" data-img="https://www.ritiriwaz.com/wp-content/uploads/2019/11/Jharkhand-Culture-and-Tradition.jpg" data-sub="Tribal dances, Sarhul festival" data-details="Jharkhand’s cultural identity derives heavily from its tribal communities — Santhal, Mundari and others — whose festivals, dances and storytelling persist as vibrant living traditions. Sarhul celebrates nature and renewal, accompanied by colorful dress, bamboo instruments and community feasts. Folk forms include Chhau-influenced masked dances and rich mural and craft traditions, while local motifs and songs keep oral histories alive amid rapidly changing economic conditions." ></div>
+
+      <div class="culture-data" data-key="Karnataka" data-img="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTVpd8juT8Rwiaz57CtME00aUAzcr3mxdS62A&s" data-sub="Yakshagana, Carnatic music" data-details="Karnataka has a remarkable cultural range, from the elaborate Yakshagana theatre — a dramatic folk form featuring painted faces and dynamic storytelling — to the refined traditions of Carnatic music and classical dance. Mysore Dasara showcases royal pageantry, while temple architecture and ritual performance at Hampi reflect historic Hindu dynasties. Handloom weaving, sandalwood craft and a diverse culinary patrimony complete a state culture that balances high classical forms with colorful folk practices." ></div>
+
+      <div class="culture-data" data-key="Kerala" data-img="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBMkgQKyUqqkReuO-Aj9yysEXlEVDKQDSGBg&s" data-sub="Kathakali, Onam, Ayurveda" data-details="Kerala’s culture is globally recognized for Kathakali — a stylized classical dance-drama with elaborate makeup and storytelling — and for Ayurvedic healing traditions. Onam unites the state with boat races, floral carpets (pookalam) and grand feasts (sadya). The region’s maritime history, spice trade legacy and literacy movements produced a rich literary and performing arts culture, and its backwaters, temple festivals and mural painting all contribute to a distinctive aesthetic marked by ritual precision and civic participation." ></div>
+
+      <div class="culture-data" data-key="Madhya Pradesh" data-img="https://www.holidaymonk.com/wp-content/uploads/2022/11/Madhya-Pradesh-events-and-festivals.webp" data-sub="Gond art, Khajuraho, folk music" data-details="Madhya Pradesh sits at the heart of India’s cultural crossroads: ancient temple complexes like Khajuraho, tribal art forms such as Gond painting, and an active folklore scene. Gond paintings depict nature and myths in vivid color and geometric forms, while local songs and dances accompany harvest festivals and fairs. The state’s palette of arts ranges from Bundelkhandi traditions to Malwa music, making it a repository of layered rural and classical heritages." ></div>
+
+      <div class="culture-data" data-key="Maharashtra" data-img="https://media.assettype.com/startupcityindia/2024-04/2c4ae43d-1f04-4cb5-a934-934e32de9de1/Maharashtra_sc.jpg?w=1200&h=675&auto=format%2Ccompress&fit=max&enlarge=true" data-sub="Lavani, Ganesh Chaturthi, Warli art" data-details="Maharashtra showcases Lavani dance and powerful folk theatre, together with the massive public spectacle of Ganesh Chaturthi that animates city streets and small towns alike. Warli painting — simple yet profound monochrome compositions on mud walls — documents daily life and ritual. Marathi literature, devotional bhakti traditions, and a rich confectionery and street food culture complement a state identity that is both urban and rooted in village crafts." ></div>
+
+      <div class="culture-data" data-key="Manipur" data-img="https://thumbs.dreamstime.com/b/people-culture-manipur-india-easy-to-edit-vector-illustration-71298281.jpg" data-sub="Ras Leela, polo heritage" data-details="Manipur is famous for its classical Manipuri dance forms (Ras Leela) and for traditional sports such as polo, which has deep historic roots here. The state’s devotional dances, delicate choreography, and Meitei classical music form an introspective cultural idiom, while Lai Haraoba and other rituals maintain strong links to community cosmologies. Handloom textiles and finely patterned shawls complete a refined material culture." ></div>
+
+      <div class="culture-data" data-key="Meghalaya" data-img="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRKW77zJ4jRW0Vl6PnCZ8PJtLf4zeANM8CrVA&s" data-sub="Matriarchal Khasi, Wangala" data-details="Meghalaya’s cultural distinctiveness includes matrilineal Khasi society, living-root bridges and musical traditions anchored in bamboo instruments and choral singing. Festivals such as Wangala celebrate agricultural cycles with drums and choreographed dances. Traditional crafts, including cane and bamboo weaving, and a strong oral literature — myths, songs and clan histories — sustain social memory across hill communities." ></div>
+
+      <div class="culture-data" data-key="Mizoram" data-img="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTCX9loqpGw9cyAcfIgYl-_hQKB-zQHOuXvqw&s" data-sub="Cheraw bamboo dance, shawls" data-details="Mizoram’s culture is spirited and communal: the Cheraw (bamboo) dance showcases dexterity and group coordination, while Mizo shawls, weaving patterns and songs mark clan identity. Festivals like Chapchar Kut blend agricultural thanksgiving with music, dance and feasting. Community feasts and elaborate traditional attire express social bonds and local aesthetics shaped by the region’s hillside geography." ></div>
+
+      <div class="culture-data" data-key="Nagaland" data-img="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTHY9t8YpkWW7ypgGpa-egUhOtKWBFzdaaPEg&s" data-sub="Hornbill Festival, Naga shawls" data-details="Nagaland is a collection of culturally distinct Naga tribes whose textile traditions, beadwork and ceremonial regalia are well known. The Hornbill Festival has become a celebrated pan-tribal showcase for dance, music, crafts and oral histories. Naga shawls and traditional weaponry carry encoded meanings of lineage and achievement, while indigenous songs and storytelling retain historical memory and social cohesion in vibrant, communal settings." ></div>
+
+      <div class="culture-data" data-key="Odisha" data-img="https://st.depositphotos.com/3210085/4854/i/950/depositphotos_48549489-stock-photo-culture-of-odisha.jpg" data-sub="Odissi dance, Rath Yatra" data-details="Odisha preserves classical forms like Odissi dance, famous for its lyrical torso movements and tribhangi poses, and religious spectacles such as the Puri Rath Yatra. The region’s visual arts — Pattachitra painting and appliqué work — are closely tied to temple cults and seasonal festivals. Coastal cuisines, ritual theatre and artisanship in stone and metalwork continue to sustain a rich artistic tradition shaped by centuries of temple patronage." ></div>
+
+      <div class="culture-data" data-key="Punjab" data-img="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTn_oqpVRMFuWpuBxl_S6qrL6Qaf-fcsi2MoA&s" data-sub="Bhangra, Vaisakhi, Sikh heritage" data-details="Punjab is synonymous with energetic Bhangra and Giddha dances whose rhythms are intertwined with harvest festivals like Vaisakhi. A strong community ethos, agricultural pride, and the robust culinary culture of tandoori breads and dairy-based dishes shape everyday life. Sikh religious festivals, gurudwara langar (community kitchen) traditions, and folk music form a resilient cultural tapestry that spans both rural and urban spaces." ></div>
+
+      <div class="culture-data" data-key="Rajasthan" data-img="https://thumbs.dreamstime.com/b/culture-rajasthan-illustration-depicting-india-41869293.jpg" data-sub="Ghoomar, forts, puppetry" data-details="Rajasthan projects a dramatic cultural image with desert music, Ghoomar dance and a long history of royal patronage. Folk singers, puppet theatre (Kathputli) and lively fairs such as Pushkar and Camel Festival preserve oral histories and local crafts. Majestic forts and palaces anchor material culture, while colorful textiles, mirrorwork embroidery and jewelry express regional aesthetics across communities." ></div>
+
+      <div class="culture-data" data-key="Sikkim" data-img="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTVmnfGztCNrLMYweQwqaNxEMXkWEgjVday5w&s" data-sub="Buddhist monasteries, Losar" data-details="Sikkim’s culture is steeped in Tibetan-Buddhist traditions, with monasteries, ritual dances and festivals like Losar and Saga Dawa shaping spiritual life. The state’s cuisine, influenced by Tibet and Nepal, complements its monastery-centered arts such as thangka painting. Local hospitality, mountain pilgrimage circuits and traditional weaving craft further define Sikkim’s serene cultural profile." ></div>
+
+      <div class="culture-data" data-key="Tamil Nadu" data-img="https://im.hunt.in/cg/tn/About/Profile/Culture-of-Tamil-Nadu.jpg" data-sub="Bharatanatyam, temple arts" data-details="Tamil Nadu’s cultural stature rests on classical Bharatanatyam, Carnatic music and monumental temple architecture like the Chola and Pandya complexes. Temple festivals, gopuram sculptures and ritual dance-dramas create dense ritual calendars, while rich literary traditions in Tamil connect contemporary practice with ancient texts. Festival foods, traditional crafts (bronze casting) and village arts all contribute to a deeply layered regional culture." ></div>
+
+      <div class="culture-data" data-key="Telangana" data-img="https://media-cdn.tripadvisor.com/media/photo-s/1a/11/0f/05/telangana-state-culture.jpg" data-sub="Bathukamma, Perini dance" data-details="Telangana carries a distinct Deccan identity marked by festivals like Bathukamma — a floral celebration of feminine energy — and martial folk dances such as Perini. The region’s cuisine, with Hyderabadi biryani as a major emblem, and its historic sites (Golconda) show layered influences from sultanates and local traditions. Handicrafts, including bidriware and ikat weaving, underscore a rich artisan culture that blends urban sophistication with rural vitality." ></div>
+
+      <div class="culture-data" data-key="Tripura" data-img="https://i.pinimg.com/736x/de/70/f3/de70f339b9890a3806c8f01a3762cba0.jpg" data-sub="Hojagiri, bamboo crafts" data-details="Tripura’s cultural life is shaped by indigenous communities and Bengali cultural influences — a mix visible in folk dances like Hojagiri, bamboo and cane crafts, and local festivals. Tribal music and dances incorporate acrobatic and devotional elements, while village rituals and foodways highlight local botanical resources and a close relationship to the land." ></div>
+
+      <div class="culture-data" data-key="Uttar Pradesh" data-img="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRu3FBYx6N6SvQLDUs2Q1hABrHXwUope5js2Q&s" data-sub="Kathak, pilgrimages, Holi" data-details="Uttar Pradesh is central to North Indian culture: Kathak dance, Mughal-era architecture (Taj Mahal), and religious pilgrimage centers like Varanasi shape a rich ceremonial life. Festivals such as Holi and Diwali have regionally specific celebrations that draw pilgrims and tourists, while classical music, devotional poetry and a diverse street-food culture make UP an epicenter of historical and living traditions." ></div>
+
+      <div class="culture-data" data-key="Uttarakhand" data-img="https://www.namasteindiatrip.com/wp-content/uploads/2019/11/People-of-Uttarakhand-.webp" data-sub="Kumaoni & Garhwali songs, pilgrimages" data-details="Uttarakhand’s culture is stitched to pilgrimage traditions, mountain ecology and hillfolks’ music. Folk songs, including those of Garhwal and Kumaon, celebrate gods, nature and pastoral life; festivals like Nanda Devi Raj Jat bring communities together in religious processions. Traditional crafts, hill cuisine, and seasonal migration patterns inform a calm, devotional, and nature-attuned cultural idiom." ></div>
+
+      <div class="culture-data" data-key="West Bengal" data-img="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQG_Ta_uStua27UWj2kn__cWhfJR1WC1tOgrw&s" data-sub="Durga Puja, Rabindra Sangeet, Baul" data-details="West Bengal combines high literary culture, devotional music and popular festival art. Durga Puja is an intense civic and artistic effort each year, producing public sculpture, music, and community theatre. Rabindra Sangeet (Tagore songs) and Baul mystic traditions reveal a contemplative musical strand, while Bengali cuisine and intellectual life make the state a major cultural capital of India." ></div>
+
+      <!-- Union Territories (8) -->
+      <div class="culture-data" data-key="Andaman and Nicobar Islands" data-img="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSW6pSsG3fUWWjTBJyjHb-Ez0XSp7kil_adPQ&s" data-sub="Island tribes, coastal life" data-details="The Andaman & Nicobar Islands host small indigenous communities with seafaring traditions, canoe building and island crafts. Cultural practices blend Austronesian traits with mainland Indian influences, visible in fishing customs, song and ceremonial life."></div>
+
+      <div class="culture-data" data-key="Chandigarh" data-img="https://goaman.weebly.com/uploads/3/0/7/8/30783429/7666341.jpg" data-sub="Planned city, Punjabi-Haryanvi mix" data-details="Chandigarh, as a planned capital, merges modernist architecture with Punjabi and Haryanvi cultural practices: rose shows, regional festivals and a cosmopolitan arts scene define public life, alongside local food and music traditions." ></div>
+
+      <div class="culture-data" data-key="Dadra and Nagar Haveli and Daman and Diu" data-img="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTYQGSYLjyOtvjzQDKs94QMqPNiT04I5q-CnQ&s" data-sub="Portuguese heritage, tribal dances" data-details="This union territory carries a blend of tribal culture and Portuguese colonial heritage in architecture, festivals and coastal cuisines. Tribal dance forms, Catholic festas and local crafts create an eclectic cultural mix." ></div>
+
+      <div class="culture-data" data-key="Delhi (NCT)" data-img="https://www.hercircle.in/hcm/Engage/D/352109E0-95DF-453A-B1F5-74E44A31AEE3.JPG" data-sub="Mughal legacy, street food, qawwali" data-details="Delhi’s culture is a layered palimpsest of Mughal, colonial and modern influences — monuments, qawwali traditions at dargahs, and a diverse street-food economy. Language, poetry and musical traditions coexist with cutting-edge contemporary arts." ></div>
+
+      <div class="culture-data" data-key="Jammu and Kashmir" data-img="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRBEcKPcCnwRknFYm-6PRKVnu5GnXT39knnvw&s" data-sub="Wazwan, Pashmina, Sufi music" data-details="Jammu & Kashmir maintain mountain courtly traditions, from the elaborate Wazwan cuisine to Pashmina shawls, Kashmiri handicrafts and Sufi musical forms. Festival cycles and pilgrimage sites add devotional rhythms to daily life." ></div>
+
+      <div class="culture-data" data-key="Ladakh" data-img="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRrBqdKfZiI5hCsmGG4pyGSw78PpRdO9HUCUw&s" data-sub="Hemis, Buddhist monasteries" data-details="Ladakh’s high plateau culture centers on Tibetan-Buddhist monasteries, masked cham dances and festivals such as Hemis. Thangka painting, yak-herding patterns and a resilient architectural style respond to extreme environments and deep spiritual practice." ></div>
+
+      <div class="culture-data" data-key="Lakshadweep" data-img="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_o9rq2Y8uk0rKrfd-ryB2NVeMuWV79x2Tug&s" data-sub="Seafaring, coconut culture" data-details="Lakshadweep preserves coral-island seafaring practices, boat building, and Islamic customs blended with coastal craft traditions. Fishing, coir crafts and island songs shape community life." ></div>
+
+      <div class="culture-data" data-key="Puducherry" data-img="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRLDckSO9t1jhtlIWwaF9_QG7D5x_mhTDEeAA&s" data-sub="French-Tamil fusion" data-details="Puducherry mixes French colonial architecture and cuisine with Tamil temple culture, producing a relaxed cosmopolitan ambiance with Auroville and seaside promenades as cultural hubs." ></div>
+
+      <!-- Tribal cultures (10) -->
+      <div class="culture-data" data-key="Santhal Tribe" data-img="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTr5mdPAnjuM4eSmauXqZOL-pcgcEMU7qoJMA&s" data-sub="Sohrai, Ol Chiki" data-details="The Santhal tribe places community, song and dance at the center of rural life. Festivals like Sohrai celebrate harvest and cattle with mural painting and ritual dances; the Santali language and Ol Chiki script form an expressive literary strand. Traditional instruments, communal dance and agricultural rites are the bedrock of Santhal cultural identity across Jharkhand and neighbouring states." ></div>
+
+      <div class="culture-data" data-key="Gondi Tribe" data-img="https://www.memeraki.com/cdn/shop/articles/Saila_and_Karma_dance_by_Gonds_1024x.jpg?v=1744106040" data-sub="Gond art, forest myths" data-details="Gond communities across central India keep alive mythic storytelling through Gond paintings and oral narratives. These paintings depict flora, fauna and cosmology in intricate patterns; seasonal rites and nature worship inform daily life and communal ceremonies." ></div>
+
+      <div class="culture-data" data-key="Khasi Tribe" data-img="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7qW_YIZdGiZEQluc9DK_eKduzjnl5BrnOtA&s" data-sub="Matrilineal customs, festivals" data-details="The Khasi people of Meghalaya are notable for their matrilineal social organization, distinctive music, and living-root bridges. Rituals, clan songs and a strong sense of kinship govern land use and local leadership in ways that set them apart from many mainland cultural systems." ></div>
+
+      <div class="culture-data" data-key="Bhil Tribe" data-img="https://i.ytimg.com/vi/5dF-HjkrcEY/sddefault.jpg" data-sub="Pithora, archery traditions" data-details="Bhil communities have maintained folk painting traditions such as Pithora, along with archery and forest-based livelihoods. Their art, ritual practices and seasonal festivals encode local histories and ecological knowledge passed across generations." ></div>
+
+      <div class="culture-data" data-key="Toda Tribe" data-img="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQyhLV4rY1iftU9q5JLc26QrGEQTfHy9nIigA&s" data-sub="Embroidery, buffalo worship" data-details="The Toda pastoralist community of the Nilgiris is best known for exquisite embroidery and a unique buffalo-centered ritual life. Toda huts, distinctive costume and ceremonial practices form a compact, highly visible cultural system." ></div>
+
+      <div class="culture-data" data-key="Apatani Tribe" data-img="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSLiLfYTv4GZ7Ujt9ZEJuBf_qIy5ISgdNd9nQ&s" data-sub="Wet rice, unique customs" data-details="Apatani villages in Arunachal Pradesh are noted for wet rice cultivation, distinctive social customs and a close relationship with riverine ecosystems. Their agricultural systems and clan ceremonies articulate a refined local knowledge of water and forest management." ></div>
+
+      <div class="culture-data" data-key="Bodo Tribe" data-img="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSyuJ1Ug_uuewV8_Bd-n4A0Zc3TuzgMiDUw6w&s" data-sub="Bagurumba, weaving" data-details="The Bodo people of Assam are celebrated for Bagurumba dance, rich handloom traditions and festivals like Bwisagu which celebrate the New Year with song, dance and community feasting. Traditional weaving patterns and colourful dress preserve a strong ethnic identity." ></div>
+
+      <div class="culture-data" data-key="Warli Tribe" data-img="https://www.iasgyan.in//ig-uploads/images//WARLI_TRIBE.jpg" data-sub="Warli painting, agricultural rites" data-details="Warli art — monochrome geometric depictions of daily life — is a visual signature of tribal communities in Maharashtra, representing human society in relation to nature, agriculture and seasonal festivals." ></div>
+
+      <div class="culture-data" data-key="Nicobarese Tribe" data-img="https://iasgyan.sgp1.digitaloceanspaces.com/images/NICOBARESE.jpg" data-sub="Canoe culture, coconut crafts" data-details="Nicobarese island communities craft canoes, practice coastal fishing economies and maintain social customs adapted to tropical island ecosystems. Song, dance and community feasts are central to social cohesion." ></div>
+
+      <div class="culture-data" data-key="Mizo Tribe" data-img="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQJKnc7COXukBzYWLhocTR2Pk-zGz_UlHImyg&s" data-sub="Cheraw, shawls, feasts" data-details="Mizo cultural life centers on dance forms like Cheraw, colourful shawls and vibrant community festivals which blend agricultural thanksgiving with communal music and feasting. Traditional weaving and handicrafts anchor identity across Mizoram." ></div>
+    </div>
+
+    <div class="back-row"><a class="back-btn" href="index.html">⬅ Back</a></div>
+  </div>
+
+  <!-- Modal -->
+<div id="cultureModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-content" role="document">
+      <div class="modal-body">
+        <div class="modal-image" id="modalImageWrap">
+          <img id="modalImage" src="" alt="">
+        </div>
+        <h2 id="modalTitle" class="modal-title"></h2>
+        <p id="modalDescription" class="modal-desc"></p>
+        <div class="modal-footer" style="margin-left:auto;">
+          <button class="close-btn" id="closeModalBtn" aria-label="Close">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+ 
+ 
+ 
+          <div style="margin-left:auto;">
+            <button id="closeModalBtn" class="close-btn" aria-label="Close">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // Build master list from hidden data
+  const master = Array.from(document.querySelectorAll('#allCultures .culture-data')).map(node => ({
+    key: node.dataset.key,
+    img: node.dataset.img,
+    sub: node.dataset.sub,
+    details: node.dataset.details
+  }));
+
+  const mostSearchedContainer = document.getElementById('mostSearched');
+  const searchInput = document.getElementById('searchInput');
+  const shuffleBtn = document.getElementById('shuffleBtn');
+
+  function pickRandom(arr, n){
+    const copy = [...arr];
+    for(let i=copy.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      [copy[i],copy[j]]=[copy[j],copy[i]];
+    }
+    return copy.slice(0,n);
+  }
+
+  function renderCards(list, container){
+    container.innerHTML='';
+    list.forEach(item=>{
+      const card = document.createElement('div');
+      card.className='culture-card';
+      card.tabIndex = 0;
+      card.setAttribute('role','button');
+      card.setAttribute('aria-pressed','false');
+      card.innerHTML = `
+        <div class="thumb"><img src="${item.img}" alt="${item.key}"></div>
+        <div>
+          <div class="card-title">${item.key}</div>
+          <div class="card-sub">${item.sub}</div>
+          <div class="tiny-note">Click here to see more</div>
+        </div>
+      `;
+      // click handler
+      card.addEventListener('click', ()=> openModal(item));
+      card.addEventListener('keypress', (e)=>{ if(e.key==='Enter' || e.key===' ') openModal(item);});
+      container.appendChild(card);
+    });
+  }
+
+  function displayRandom(){
+    const picked = pickRandom(master, 5);
+    renderCards(picked, mostSearchedContainer);
+  }
+
+  // Initial
+  displayRandom();
+
+  // Shuffle button
+  shuffleBtn.addEventListener('click', ()=> displayRandom());
+
+  // Search behavior
+  searchInput.addEventListener('input', (e)=>{
+    const term = e.target.value.trim().toLowerCase();
+    if(!term){
+      displayRandom();
+      return;
+    }
+    const filtered = master.filter(m => m.key.toLowerCase().includes(term) || m.sub.toLowerCase().includes(term) || m.details.toLowerCase().includes(term));
+    if(filtered.length === 0){
+      mostSearchedContainer.innerHTML = '<div style="padding:14px;color:#666">No matches found.</div>';
+    } else {
+      renderCards(filtered, mostSearchedContainer);
+    }
+  });
+
+  // Modal functions
+  const modal = document.getElementById('cultureModal');
+  const modalTitle = document.getElementById('modalTitle');
+  const modalImage = document.getElementById('modalImage');
+  const modalDescription = document.getElementById('modalDescription');
+  const closeModalBtn = document.getElementById('closeModalBtn');
+
+  function openModal(item){
+    modalTitle.textContent = item.key;
+    modalImage.src = item.img;
+    modalImage.alt = item.key + ' image';
+    modalDescription.textContent = item.details;
+    modal.classList.add('open');
+    // trap focus simple
+    closeModalBtn.focus();
+  }
+
+  function closeModal(){
+    modal.classList.remove('open');
+  }
+
+  closeModalBtn.addEventListener('click', closeModal);
+  modal.addEventListener('click', (ev)=>{ if(ev.target === modal) closeModal(); });
+  document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeModal(); });
+
+  // Accessibility: ensure shuffle button accessible
+  shuffleBtn.addEventListener('keypress', (e)=>{ if(e.key==='Enter' || e.key===' ') displayRandom(); });
+
+</script>
+</body>
+</html>
